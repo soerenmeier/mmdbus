@@ -15,8 +15,11 @@ pub trait Modem {
     fn set_current_capabilities(&self, capabilities: u32) -> Result<(), dbus::Error>;
     fn set_current_modes(&self, modes: (u32, u32)) -> Result<(), dbus::Error>;
     fn set_current_bands(&self, bands: Vec<u32>) -> Result<(), dbus::Error>;
+    fn set_primary_sim_slot(&self, sim_slot: u32) -> Result<(), dbus::Error>;
     fn command(&self, cmd: &str, timeout: u32) -> Result<String, dbus::Error>;
     fn sim(&self) -> Result<dbus::Path<'static>, dbus::Error>;
+    fn sim_slots(&self) -> Result<Vec<dbus::Path<'static>>, dbus::Error>;
+    fn primary_sim_slot(&self) -> Result<u32, dbus::Error>;
     fn bearers(&self) -> Result<Vec<dbus::Path<'static>>, dbus::Error>;
     fn supported_capabilities(&self) -> Result<Vec<u32>, dbus::Error>;
     fn current_capabilities(&self) -> Result<u32, dbus::Error>;
@@ -124,6 +127,10 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Modem for 
         self.method_call("org.freedesktop.ModemManager1.Modem", "SetCurrentBands", (bands, ))
     }
 
+    fn set_primary_sim_slot(&self, sim_slot: u32) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem", "SetPrimarySimSlot", (sim_slot, ))
+    }
+
     fn command(&self, cmd: &str, timeout: u32) -> Result<String, dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1.Modem", "Command", (cmd, timeout, ))
             .and_then(|r: (String, )| Ok(r.0, ))
@@ -131,6 +138,14 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Modem for 
 
     fn sim(&self) -> Result<dbus::Path<'static>, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "Sim")
+    }
+
+    fn sim_slots(&self) -> Result<Vec<dbus::Path<'static>>, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "SimSlots")
+    }
+
+    fn primary_sim_slot(&self) -> Result<u32, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "PrimarySimSlot")
     }
 
     fn bearers(&self) -> Result<Vec<dbus::Path<'static>>, dbus::Error> {

@@ -12,6 +12,7 @@ pub trait ModemSignal {
     fn gsm(&self) -> Result<arg::PropMap, dbus::Error>;
     fn umts(&self) -> Result<arg::PropMap, dbus::Error>;
     fn lte(&self) -> Result<arg::PropMap, dbus::Error>;
+    fn nr5g(&self) -> Result<arg::PropMap, dbus::Error>;
 }
 
 impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemSignal for blocking::Proxy<'a, C> {
@@ -42,5 +43,9 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemSigna
 
     fn lte(&self) -> Result<arg::PropMap, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Signal", "Lte")
+    }
+
+    fn nr5g(&self) -> Result<arg::PropMap, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Signal", "Nr5g")
     }
 }

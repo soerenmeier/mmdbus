@@ -9,8 +9,10 @@ pub trait Sim {
     fn send_puk(&self, puk: &str, pin: &str) -> Result<(), dbus::Error>;
     fn enable_pin(&self, pin: &str, enabled: bool) -> Result<(), dbus::Error>;
     fn change_pin(&self, old_pin: &str, new_pin: &str) -> Result<(), dbus::Error>;
+    fn active(&self) -> Result<bool, dbus::Error>;
     fn sim_identifier(&self) -> Result<String, dbus::Error>;
     fn imsi(&self) -> Result<String, dbus::Error>;
+    fn eid(&self) -> Result<String, dbus::Error>;
     fn operator_identifier(&self) -> Result<String, dbus::Error>;
     fn operator_name(&self) -> Result<String, dbus::Error>;
     fn emergency_numbers(&self) -> Result<Vec<String>, dbus::Error>;
@@ -34,12 +36,20 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Sim for bl
         self.method_call("org.freedesktop.ModemManager1.Sim", "ChangePin", (old_pin, new_pin, ))
     }
 
+    fn active(&self) -> Result<bool, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "Active")
+    }
+
     fn sim_identifier(&self) -> Result<String, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "SimIdentifier")
     }
 
     fn imsi(&self) -> Result<String, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "Imsi")
+    }
+
+    fn eid(&self) -> Result<String, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "Eid")
     }
 
     fn operator_identifier(&self) -> Result<String, dbus::Error> {
