@@ -1,0 +1,13 @@
+[package]
+name = "mmdbus"
+description = "Dbus bindings to the ModemManager."
+version = "1.6.14"
+authors = ["Sören Meier <soeren@s-me.ch>"]
+repository = "https://github.com/soerenmeier/mmdbus"
+license = "MIT OR Apache-2.0"
+edition = "2021"
+keywords = ["modem-manager", "dbus"]
+categories = ["os::unix-apis", "api-bindings"]
+
+[dependencies]
+dbus = "0.9"
