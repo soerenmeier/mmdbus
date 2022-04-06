@@ -8,7 +8,14 @@ pub trait ModemVoice {
     fn list_calls(&self) -> Result<Vec<dbus::Path<'static>>, dbus::Error>;
     fn delete_call(&self, path: dbus::Path) -> Result<(), dbus::Error>;
     fn create_call(&self, properties: arg::PropMap) -> Result<dbus::Path<'static>, dbus::Error>;
+    fn hold_and_accept(&self) -> Result<(), dbus::Error>;
+    fn hangup_and_accept(&self) -> Result<(), dbus::Error>;
+    fn hangup_all(&self) -> Result<(), dbus::Error>;
+    fn transfer(&self) -> Result<(), dbus::Error>;
+    fn call_waiting_setup(&self, enable: bool) -> Result<(), dbus::Error>;
+    fn call_waiting_query(&self) -> Result<bool, dbus::Error>;
     fn calls(&self) -> Result<Vec<dbus::Path<'static>>, dbus::Error>;
+    fn emergency_only(&self) -> Result<bool, dbus::Error>;
 }
 
 #[derive(Debug)]
@@ -75,7 +82,36 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemVoice
             .and_then(|r: (dbus::Path<'static>, )| Ok(r.0, ))
     }
 
+    fn hold_and_accept(&self) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Voice", "HoldAndAccept", ())
+    }
+
+    fn hangup_and_accept(&self) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Voice", "HangupAndAccept", ())
+    }
+
+    fn hangup_all(&self) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Voice", "HangupAll", ())
+    }
+
+    fn transfer(&self) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Voice", "Transfer", ())
+    }
+
+    fn call_waiting_setup(&self, enable: bool) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Voice", "CallWaitingSetup", (enable, ))
+    }
+
+    fn call_waiting_query(&self) -> Result<bool, dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Voice", "CallWaitingQuery", ())
+            .and_then(|r: (bool, )| Ok(r.0, ))
+    }
+
     fn calls(&self) -> Result<Vec<dbus::Path<'static>>, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Voice", "Calls")
+    }
+
+    fn emergency_only(&self) -> Result<bool, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Voice", "EmergencyOnly")
     }
 }

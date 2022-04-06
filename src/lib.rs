@@ -1,5 +1,5 @@
 //! dbus types for the ModemManager api
-//! with the version 1.10.8
+//! with the version 1.14.12
 pub use dbus;
 pub mod bearer;
 pub mod call;

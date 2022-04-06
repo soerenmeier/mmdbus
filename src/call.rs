@@ -7,12 +7,16 @@ use dbus::blocking;
 pub trait Call {
     fn start(&self) -> Result<(), dbus::Error>;
     fn accept(&self) -> Result<(), dbus::Error>;
+    fn deflect(&self, number: &str) -> Result<(), dbus::Error>;
+    fn join_multiparty(&self) -> Result<(), dbus::Error>;
+    fn leave_multiparty(&self) -> Result<(), dbus::Error>;
     fn hangup(&self) -> Result<(), dbus::Error>;
     fn send_dtmf(&self, dtmf: &str) -> Result<(), dbus::Error>;
     fn state(&self) -> Result<i32, dbus::Error>;
     fn state_reason(&self) -> Result<i32, dbus::Error>;
     fn direction(&self) -> Result<i32, dbus::Error>;
     fn number(&self) -> Result<String, dbus::Error>;
+    fn multiparty(&self) -> Result<bool, dbus::Error>;
     fn audio_port(&self) -> Result<String, dbus::Error>;
     fn audio_format(&self) -> Result<arg::PropMap, dbus::Error>;
 }
@@ -81,6 +85,18 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Call for b
         self.method_call("org.freedesktop.ModemManager1.Call", "Accept", ())
     }
 
+    fn deflect(&self, number: &str) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Call", "Deflect", (number, ))
+    }
+
+    fn join_multiparty(&self) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Call", "JoinMultiparty", ())
+    }
+
+    fn leave_multiparty(&self) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Call", "LeaveMultiparty", ())
+    }
+
     fn hangup(&self) -> Result<(), dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1.Call", "Hangup", ())
     }
@@ -103,6 +119,10 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Call for b
 
     fn number(&self) -> Result<String, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Call", "Number")
+    }
+
+    fn multiparty(&self) -> Result<bool, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Call", "Multiparty")
     }
 
     fn audio_port(&self) -> Result<String, dbus::Error> {

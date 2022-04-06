@@ -13,6 +13,7 @@ pub trait Sim {
     fn imsi(&self) -> Result<String, dbus::Error>;
     fn operator_identifier(&self) -> Result<String, dbus::Error>;
     fn operator_name(&self) -> Result<String, dbus::Error>;
+    fn emergency_numbers(&self) -> Result<Vec<String>, dbus::Error>;
 }
 
 impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Sim for blocking::Proxy<'a, C> {
@@ -47,5 +48,9 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Sim for bl
 
     fn operator_name(&self) -> Result<String, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "OperatorName")
+    }
+
+    fn emergency_numbers(&self) -> Result<Vec<String>, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "EmergencyNumbers")
     }
 }
