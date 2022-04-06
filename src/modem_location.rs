@@ -8,12 +8,15 @@ pub trait ModemLocation {
     fn setup(&self, sources: u32, signal_location: bool) -> Result<(), dbus::Error>;
     fn get_location(&self) -> Result<::std::collections::HashMap<u32, arg::Variant<Box<dyn arg::RefArg + 'static>>>, dbus::Error>;
     fn set_supl_server(&self, supl: &str) -> Result<(), dbus::Error>;
+    fn inject_assistance_data(&self, data: Vec<u8>) -> Result<(), dbus::Error>;
     fn set_gps_refresh_rate(&self, rate: u32) -> Result<(), dbus::Error>;
     fn capabilities(&self) -> Result<u32, dbus::Error>;
+    fn supported_assistance_data(&self) -> Result<u32, dbus::Error>;
     fn enabled(&self) -> Result<u32, dbus::Error>;
     fn signals_location(&self) -> Result<bool, dbus::Error>;
     fn location(&self) -> Result<::std::collections::HashMap<u32, arg::Variant<Box<dyn arg::RefArg + 'static>>>, dbus::Error>;
     fn supl_server(&self) -> Result<String, dbus::Error>;
+    fn assistance_data_servers(&self) -> Result<Vec<String>, dbus::Error>;
     fn gps_refresh_rate(&self) -> Result<u32, dbus::Error>;
 }
 
@@ -32,12 +35,20 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemLocat
         self.method_call("org.freedesktop.ModemManager1.Modem.Location", "SetSuplServer", (supl, ))
     }
 
+    fn inject_assistance_data(&self, data: Vec<u8>) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Location", "InjectAssistanceData", (data, ))
+    }
+
     fn set_gps_refresh_rate(&self, rate: u32) -> Result<(), dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1.Modem.Location", "SetGpsRefreshRate", (rate, ))
     }
 
     fn capabilities(&self) -> Result<u32, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Location", "Capabilities")
+    }
+
+    fn supported_assistance_data(&self) -> Result<u32, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Location", "SupportedAssistanceData")
     }
 
     fn enabled(&self) -> Result<u32, dbus::Error> {
@@ -54,6 +65,10 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemLocat
 
     fn supl_server(&self) -> Result<String, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Location", "SuplServer")
+    }
+
+    fn assistance_data_servers(&self) -> Result<Vec<String>, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Location", "AssistanceDataServers")
     }
 
     fn gps_refresh_rate(&self) -> Result<u32, dbus::Error> {

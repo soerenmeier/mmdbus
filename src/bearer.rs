@@ -14,6 +14,7 @@ pub trait Bearer {
     fn ip6_config(&self) -> Result<arg::PropMap, dbus::Error>;
     fn stats(&self) -> Result<arg::PropMap, dbus::Error>;
     fn ip_timeout(&self) -> Result<u32, dbus::Error>;
+    fn bearer_type(&self) -> Result<u32, dbus::Error>;
     fn properties(&self) -> Result<arg::PropMap, dbus::Error>;
 }
 
@@ -53,6 +54,10 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Bearer for
 
     fn ip_timeout(&self) -> Result<u32, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Bearer", "IpTimeout")
+    }
+
+    fn bearer_type(&self) -> Result<u32, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Bearer", "BearerType")
     }
 
     fn properties(&self) -> Result<arg::PropMap, dbus::Error> {

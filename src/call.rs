@@ -13,6 +13,8 @@ pub trait Call {
     fn state_reason(&self) -> Result<i32, dbus::Error>;
     fn direction(&self) -> Result<i32, dbus::Error>;
     fn number(&self) -> Result<String, dbus::Error>;
+    fn audio_port(&self) -> Result<String, dbus::Error>;
+    fn audio_format(&self) -> Result<arg::PropMap, dbus::Error>;
 }
 
 #[derive(Debug)]
@@ -101,5 +103,13 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Call for b
 
     fn number(&self) -> Result<String, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Call", "Number")
+    }
+
+    fn audio_port(&self) -> Result<String, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Call", "AudioPort")
+    }
+
+    fn audio_format(&self) -> Result<arg::PropMap, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Call", "AudioFormat")
     }
 }

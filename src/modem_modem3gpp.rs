@@ -7,12 +7,18 @@ use dbus::blocking;
 pub trait ModemModem3gpp {
     fn register(&self, operator_id: &str) -> Result<(), dbus::Error>;
     fn scan(&self) -> Result<Vec<arg::PropMap>, dbus::Error>;
+    fn set_eps_ue_mode_operation(&self, mode: u32) -> Result<(), dbus::Error>;
+    fn set_initial_eps_bearer_settings(&self, settings: arg::PropMap) -> Result<(), dbus::Error>;
     fn imei(&self) -> Result<String, dbus::Error>;
     fn registration_state(&self) -> Result<u32, dbus::Error>;
     fn operator_code(&self) -> Result<String, dbus::Error>;
     fn operator_name(&self) -> Result<String, dbus::Error>;
     fn enabled_facility_locks(&self) -> Result<u32, dbus::Error>;
     fn subscription_state(&self) -> Result<u32, dbus::Error>;
+    fn eps_ue_mode_operation(&self) -> Result<u32, dbus::Error>;
+    fn pco(&self) -> Result<Vec<(u32, bool, Vec<u8>)>, dbus::Error>;
+    fn initial_eps_bearer(&self) -> Result<dbus::Path<'static>, dbus::Error>;
+    fn initial_eps_bearer_settings(&self) -> Result<arg::PropMap, dbus::Error>;
 }
 
 impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemModem3gpp for blocking::Proxy<'a, C> {
@@ -24,6 +30,14 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemModem
     fn scan(&self) -> Result<Vec<arg::PropMap>, dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1.Modem.Modem3gpp", "Scan", ())
             .and_then(|r: (Vec<arg::PropMap>, )| Ok(r.0, ))
+    }
+
+    fn set_eps_ue_mode_operation(&self, mode: u32) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Modem3gpp", "SetEpsUeModeOperation", (mode, ))
+    }
+
+    fn set_initial_eps_bearer_settings(&self, settings: arg::PropMap) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Modem3gpp", "SetInitialEpsBearerSettings", (settings, ))
     }
 
     fn imei(&self) -> Result<String, dbus::Error> {
@@ -48,5 +62,21 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemModem
 
     fn subscription_state(&self) -> Result<u32, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Modem3gpp", "SubscriptionState")
+    }
+
+    fn eps_ue_mode_operation(&self) -> Result<u32, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Modem3gpp", "EpsUeModeOperation")
+    }
+
+    fn pco(&self) -> Result<Vec<(u32, bool, Vec<u8>)>, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Modem3gpp", "Pco")
+    }
+
+    fn initial_eps_bearer(&self) -> Result<dbus::Path<'static>, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Modem3gpp", "InitialEpsBearer")
+    }
+
+    fn initial_eps_bearer_settings(&self) -> Result<arg::PropMap, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Modem3gpp", "InitialEpsBearerSettings")
     }
 }

@@ -7,6 +7,9 @@ use dbus::blocking;
 pub trait ModemManager {
     fn scan_devices(&self) -> Result<(), dbus::Error>;
     fn set_logging(&self, level: &str) -> Result<(), dbus::Error>;
+    fn report_kernel_event(&self, properties: arg::PropMap) -> Result<(), dbus::Error>;
+    fn inhibit_device(&self, uid: &str, inhibit: bool) -> Result<(), dbus::Error>;
+    fn version(&self) -> Result<String, dbus::Error>;
 }
 
 impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemManager for blocking::Proxy<'a, C> {
@@ -17,5 +20,17 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemManag
 
     fn set_logging(&self, level: &str) -> Result<(), dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1", "SetLogging", (level, ))
+    }
+
+    fn report_kernel_event(&self, properties: arg::PropMap) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1", "ReportKernelEvent", (properties, ))
+    }
+
+    fn inhibit_device(&self, uid: &str, inhibit: bool) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1", "InhibitDevice", (uid, inhibit, ))
+    }
+
+    fn version(&self) -> Result<String, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1", "Version")
     }
 }

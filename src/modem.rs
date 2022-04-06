@@ -25,6 +25,9 @@ pub trait Modem {
     fn manufacturer(&self) -> Result<String, dbus::Error>;
     fn model(&self) -> Result<String, dbus::Error>;
     fn revision(&self) -> Result<String, dbus::Error>;
+    fn carrier_configuration(&self) -> Result<String, dbus::Error>;
+    fn carrier_configuration_revision(&self) -> Result<String, dbus::Error>;
+    fn hardware_revision(&self) -> Result<String, dbus::Error>;
     fn device_identifier(&self) -> Result<String, dbus::Error>;
     fn device(&self) -> Result<String, dbus::Error>;
     fn drivers(&self) -> Result<Vec<String>, dbus::Error>;
@@ -160,6 +163,18 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Modem for 
 
     fn revision(&self) -> Result<String, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "Revision")
+    }
+
+    fn carrier_configuration(&self) -> Result<String, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "CarrierConfiguration")
+    }
+
+    fn carrier_configuration_revision(&self) -> Result<String, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "CarrierConfigurationRevision")
+    }
+
+    fn hardware_revision(&self) -> Result<String, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "HardwareRevision")
     }
 
     fn device_identifier(&self) -> Result<String, dbus::Error> {

@@ -7,6 +7,7 @@ use dbus::blocking;
 pub trait ModemFirmware {
     fn list(&self) -> Result<(String, Vec<arg::PropMap>), dbus::Error>;
     fn select(&self, uniqueid: &str) -> Result<(), dbus::Error>;
+    fn update_settings(&self) -> Result<(u32, arg::PropMap), dbus::Error>;
 }
 
 impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemFirmware for blocking::Proxy<'a, C> {
@@ -17,5 +18,9 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemFirmw
 
     fn select(&self, uniqueid: &str) -> Result<(), dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1.Modem.Firmware", "Select", (uniqueid, ))
+    }
+
+    fn update_settings(&self) -> Result<(u32, arg::PropMap), dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem.Firmware", "UpdateSettings")
     }
 }
