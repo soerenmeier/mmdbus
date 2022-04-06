@@ -1,11 +1,12 @@
 //! dbus types for the ModemManager api
-//! with the version 1.16.10
+//! with the version 1.17.900
 pub use dbus;
 pub mod bearer;
 pub mod call;
 pub mod modem_firmware;
 pub mod modem_location;
 pub mod modem_messaging;
+pub mod modem_modem3gpp_profilemanager;
 pub mod modem_modem3gpp_ussd;
 pub mod modem_modem3gpp;
 pub mod modem_modemcdma;

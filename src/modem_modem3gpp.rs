@@ -9,6 +9,7 @@ pub trait ModemModem3gpp {
     fn scan(&self) -> Result<Vec<arg::PropMap>, dbus::Error>;
     fn set_eps_ue_mode_operation(&self, mode: u32) -> Result<(), dbus::Error>;
     fn set_initial_eps_bearer_settings(&self, settings: arg::PropMap) -> Result<(), dbus::Error>;
+    fn disable_facility_lock(&self, properties: (u32, &str)) -> Result<(), dbus::Error>;
     fn imei(&self) -> Result<String, dbus::Error>;
     fn registration_state(&self) -> Result<u32, dbus::Error>;
     fn operator_code(&self) -> Result<String, dbus::Error>;
@@ -38,6 +39,10 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> ModemModem
 
     fn set_initial_eps_bearer_settings(&self, settings: arg::PropMap) -> Result<(), dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1.Modem.Modem3gpp", "SetInitialEpsBearerSettings", (settings, ))
+    }
+
+    fn disable_facility_lock(&self, properties: (u32, &str)) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Modem.Modem3gpp", "DisableFacilityLock", (properties, ))
     }
 
     fn imei(&self) -> Result<String, dbus::Error> {

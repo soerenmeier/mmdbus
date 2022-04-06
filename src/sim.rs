@@ -9,6 +9,7 @@ pub trait Sim {
     fn send_puk(&self, puk: &str, pin: &str) -> Result<(), dbus::Error>;
     fn enable_pin(&self, pin: &str, enabled: bool) -> Result<(), dbus::Error>;
     fn change_pin(&self, old_pin: &str, new_pin: &str) -> Result<(), dbus::Error>;
+    fn set_preferred_networks(&self, preferred_networks: Vec<(&str, u32)>) -> Result<(), dbus::Error>;
     fn active(&self) -> Result<bool, dbus::Error>;
     fn sim_identifier(&self) -> Result<String, dbus::Error>;
     fn imsi(&self) -> Result<String, dbus::Error>;
@@ -16,6 +17,7 @@ pub trait Sim {
     fn operator_identifier(&self) -> Result<String, dbus::Error>;
     fn operator_name(&self) -> Result<String, dbus::Error>;
     fn emergency_numbers(&self) -> Result<Vec<String>, dbus::Error>;
+    fn preferred_networks(&self) -> Result<Vec<(String, u32)>, dbus::Error>;
 }
 
 impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Sim for blocking::Proxy<'a, C> {
@@ -34,6 +36,10 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Sim for bl
 
     fn change_pin(&self, old_pin: &str, new_pin: &str) -> Result<(), dbus::Error> {
         self.method_call("org.freedesktop.ModemManager1.Sim", "ChangePin", (old_pin, new_pin, ))
+    }
+
+    fn set_preferred_networks(&self, preferred_networks: Vec<(&str, u32)>) -> Result<(), dbus::Error> {
+        self.method_call("org.freedesktop.ModemManager1.Sim", "SetPreferredNetworks", (preferred_networks, ))
     }
 
     fn active(&self) -> Result<bool, dbus::Error> {
@@ -62,5 +68,9 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Sim for bl
 
     fn emergency_numbers(&self) -> Result<Vec<String>, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "EmergencyNumbers")
+    }
+
+    fn preferred_networks(&self) -> Result<Vec<(String, u32)>, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Sim", "PreferredNetworks")
     }
 }

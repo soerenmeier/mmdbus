@@ -25,6 +25,7 @@ pub trait Modem {
     fn current_capabilities(&self) -> Result<u32, dbus::Error>;
     fn max_bearers(&self) -> Result<u32, dbus::Error>;
     fn max_active_bearers(&self) -> Result<u32, dbus::Error>;
+    fn max_active_multiplexed_bearers(&self) -> Result<u32, dbus::Error>;
     fn manufacturer(&self) -> Result<String, dbus::Error>;
     fn model(&self) -> Result<String, dbus::Error>;
     fn revision(&self) -> Result<String, dbus::Error>;
@@ -166,6 +167,10 @@ impl<'a, T: blocking::BlockingSender, C: ::std::ops::Deref<Target=T>> Modem for 
 
     fn max_active_bearers(&self) -> Result<u32, dbus::Error> {
         <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "MaxActiveBearers")
+    }
+
+    fn max_active_multiplexed_bearers(&self) -> Result<u32, dbus::Error> {
+        <Self as blocking::stdintf::org_freedesktop_dbus::Properties>::get(&self, "org.freedesktop.ModemManager1.Modem", "MaxActiveMultiplexedBearers")
     }
 
     fn manufacturer(&self) -> Result<String, dbus::Error> {
